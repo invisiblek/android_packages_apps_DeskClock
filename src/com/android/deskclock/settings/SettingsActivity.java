@@ -62,6 +62,9 @@ public final class SettingsActivity extends BaseActivity {
     public static final String KEY_VOLUME_BUTTONS = "volume_button_setting";
     public static final String KEY_WEEK_START = "week_start";
 
+    public static final String KEY_FLIP_ACTION = "flip_action";
+    public static final String KEY_SHAKE_ACTION = "shake_action";
+
     public static final String DEFAULT_VOLUME_BEHAVIOR = "0";
     public static final String VOLUME_BEHAVIOR_SNOOZE = "1";
     public static final String VOLUME_BEHAVIOR_DISMISS = "2";
@@ -171,6 +174,8 @@ public final class SettingsActivity extends BaseActivity {
                 case KEY_CLOCK_STYLE:
                 case KEY_WEEK_START:
                 case KEY_VOLUME_BUTTONS:
+                case KEY_FLIP_ACTION:
+                case KEY_SHAKE_ACTION:
                     final SimpleMenuPreference simpleMenuPreference = (SimpleMenuPreference) pref;
                     final int i = simpleMenuPreference.findIndexOfValue((String) newValue);
                     pref.setSummary(simpleMenuPreference.getEntries()[i]);
@@ -198,6 +203,12 @@ public final class SettingsActivity extends BaseActivity {
             // Set result so DeskClock knows to refresh itself
             getActivity().setResult(RESULT_OK);
             return true;
+        }
+
+        private void updateActionSummary(ListPreference listPref, String action, int summaryResId) {
+            int i = Integer.parseInt(action);
+            listPref.setSummary(getString(summaryResId,
+            getResources().getStringArray(R.array.action_summary_entries)[i]));
         }
 
         @Override
@@ -308,6 +319,16 @@ public final class SettingsActivity extends BaseActivity {
             final Preference timerRingtonePref = findPreference(KEY_TIMER_RINGTONE);
             timerRingtonePref.setOnPreferenceClickListener(this);
             timerRingtonePref.setSummary(DataModel.getDataModel().getTimerRingtoneTitle());
+
+            final SimpleMenuPreference flipActionPref = (SimpleMenuPreference)
+                    findPreference(KEY_FLIP_ACTION);
+            flipActionPref.setSummary(flipActionPref.getEntry());
+            flipActionPref.setOnPreferenceChangeListener(this);
+
+            final SimpleMenuPreference shakeActionPref = (SimpleMenuPreference)
+                    findPreference(KEY_SHAKE_ACTION);
+            shakeActionPref.setSummary(shakeActionPref.getEntry());
+            shakeActionPref.setOnPreferenceChangeListener(this);
         }
 
         private void refreshListPreference(ListPreference preference) {
